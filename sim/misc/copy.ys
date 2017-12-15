@@ -1,0 +1,47 @@
+            	.pos 0
+init:		irmovl  Stack, %esp
+		irmovl  Stack, %ebp
+		call    Main
+		halt
+	
+            	.align 4 		# src and dest
+src:
+		.long 0x00a
+		.long 0x0b0 
+		.long 0xc00
+dest:
+		.long 0x111
+		.long 0x222 
+		.long 0x333
+
+Main:		pushl	%ebp
+		rrmovl	%esp, %ebp
+		irmovl  src, %edx	# push parameters into stack
+		pushl	%edx
+		irmovl	dest, %edx
+		pushl	%edx
+		irmovl  $3, %edx	# push length of area
+		pushl	%edx
+		call	copy_block
+		rrmovl	%ebp, %esp
+		pop	%ebp
+		ret
+
+copy_block:	pushl	%ebp
+		rrmovl	%esp, %ebp
+		mrmovl	8(%ebp), %ecx	# ecx=length
+		xorl	%eax, %eax	# init result
+		mrmovl	12(%ebp), %edx  # edx=dest
+		mrmovl  16(%ebp), %ebx  # ebx=src
+		andl	%ecx, %ecx	# if length=0, return
+		je	End
+Loop:						
+		
+
+End:		rrmovl  %ebp, %esp
+		pop	%ebp
+		ret
+
+
+	    .pos 0x100
+Stack:         

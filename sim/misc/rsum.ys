@@ -1,0 +1,51 @@
+		.pos 0
+init:		irmovl Stack, %esp
+		irmovl Stack, %ebp
+		call   Main   
+		halt
+
+		.align 4		# Sample linked list
+ele1:
+		.long 0x00a
+		.long ele2
+ele2:
+		.long 0x0b0
+		.long ele3
+ele3:
+		.long 0xc00
+		.long 0
+
+Main:		pushl	%ebp
+		rrmovl	%esp, %ebp
+		xorl	%eax, %eax	# init result value
+		irmovl	ele1, %edx	# edx=ele1
+		pushl	%edx		# set edx as parameter of sum_list
+		call	rsum_list
+		rrmovl	%ebp, %esp
+		popl	%ebp
+		ret
+	
+rsum_list:	pushl	%ebp
+		rrmovl	%esp, %ebp
+		mrmovl	8(%ebp), %edx	# init edx as the start of list
+		andl	%edx, %edx	# test if array length is 0
+		je	End		# if array length is 0, stop calculating
+
+recursive:
+		mrmovl  (%edx), %esi
+		addl	%esi, %eax
+		irmovl  $4, %edi
+		addl	%edi, %edx
+		mrmovl  (%edx), %esi
+		rrmovl  %esi, %edx
+		pushl	%edx
+		call 	rsum_list	
+
+End:		rrmovl	%ebp, %esp
+		popl	%ebp
+		ret
+
+
+# the stack starts here and grows to lower address
+		.pos 0x100
+Stack: 
