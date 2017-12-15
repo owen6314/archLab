@@ -36,7 +36,9 @@ Loop:		mrmovl	(%edx), %esi	# esi = current value
 		irmovl	$4, %edi	# edi=4
 		addl	%edi, %edx	# set edx as next
 		mrmovl  (%edx), %esi	# get next value to esi
-		andl	%esi, %esi	# test if next is 0
+		#	andl	%esi, %esi	# test if next is 0
+		rrmovl  %esi, %edx
+		andl	%edx, %edx
 		je	End
 		jmp	Loop
 		
@@ -45,6 +47,6 @@ End:		rrmovl	%ebp, %esp
 		ret
 
 
-# the stack starts here and gorws to lower address
+# the stack starts here and grows to lower address
 		.pos 0x100
 Stack: 
