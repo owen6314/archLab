@@ -21,6 +21,7 @@ Main:		pushl	%ebp
 		irmovl	ele1, %edx	# edx=ele1
 		pushl	%edx		# set edx as parameter of sum_list
 		call	rsum_list
+		popl	%edx
 		rrmovl	%ebp, %esp
 		popl	%ebp
 		ret
@@ -32,14 +33,17 @@ rsum_list:	pushl	%ebp
 		je	End		# if array length is 0, stop calculating
 
 recursive:
-		mrmovl  (%edx), %esi
-		addl	%esi, %eax
-		irmovl  $4, %edi
-		addl	%edi, %edx
-		mrmovl  (%edx), %esi
-		rrmovl  %esi, %edx
-		pushl	%edx
-		call 	rsum_list	
+		mrmovl  (%edx), %esi	# esi=current value
+		pushl	%esi		# save esi
+		irmovl  $4, %edi	# edi=4
+		addl	%edi, %edx	# set edx as next
+		mrmovl  (%edx), %esi	# get next value to esi
+		rrmovl  %esi, %edx	
+		pushl	%edx		# edx=parameter for next recursion
+		call 	rsum_list
+		popl	%edx		 
+		popl	%esi		# recover esi
+		addl	%esi, %eax	# add current value to total value
 
 End:		rrmovl	%ebp, %esp
 		popl	%ebp

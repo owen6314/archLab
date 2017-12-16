@@ -24,24 +24,32 @@ Main:		pushl	%ebp
 		pushl	%edx
 		call	copy_block
 		rrmovl	%ebp, %esp
-		pop	%ebp
+		popl	%ebp
 		ret
 
 copy_block:	pushl	%ebp
 		rrmovl	%esp, %ebp
 		mrmovl	8(%ebp), %ecx	# ecx=length
-		xorl	%eax, %eax	# init result
+		xorl	%eax, %eax	# init result, eax=result
 		mrmovl	12(%ebp), %edx  # edx=dest
 		mrmovl  16(%ebp), %ebx  # ebx=src
 		andl	%ecx, %ecx	# if length=0, return
 		je	End
-Loop:						
+
+Loop:		mrmovl  (%ebx), %esi
+		rmmovl	%esi, (%edx)	# copy src to dest
+		xorl	%esi, %eax	# result^=val
+		irmovl	$4, %edi	# edi = 4
+		addl	%edi, %ebx	# src++	
+		addl	%edi, %edx	# dest++
+		irmovl  $1, %esi	# esi=1
+		subl	%esi, %ecx	# len--
+		andl	%ecx, %ecx	# check if len is zero
+		jne	Loop						
 		
-
 End:		rrmovl  %ebp, %esp
-		pop	%ebp
+		popl	%ebp
 		ret
-
 
 	    .pos 0x100
 Stack:         
