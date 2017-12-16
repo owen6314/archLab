@@ -1,10 +1,11 @@
-            	.pos 0
-init:		irmovl  Stack, %esp
+# 软件52班 张迁瑞 2015013226
+        .pos 0
+init:	irmovl  Stack, %esp
 		irmovl  Stack, %ebp
 		call    Main
 		halt
 	
-            	.align 4 		# src and dest
+        .align 4 		# src and dest
 src:
 		.long 0x00a
 		.long 0x0b0 
@@ -14,7 +15,7 @@ dest:
 		.long 0x222 
 		.long 0x333
 
-Main:		pushl	%ebp
+Main:	pushl	%ebp
 		rrmovl	%esp, %ebp
 		irmovl  src, %edx	# push parameters into stack
 		pushl	%edx
@@ -36,7 +37,7 @@ copy_block:	pushl	%ebp
 		andl	%ecx, %ecx	# if length=0, return
 		je	End
 
-Loop:		mrmovl  (%ebx), %esi
+Loop:	mrmovl  (%ebx), %esi
 		rmmovl	%esi, (%edx)	# copy src to dest
 		xorl	%esi, %eax	# result^=val
 		irmovl	$4, %edi	# edi = 4
@@ -47,7 +48,7 @@ Loop:		mrmovl  (%ebx), %esi
 		andl	%ecx, %ecx	# check if len is zero
 		jne	Loop						
 		
-End:		rrmovl  %ebp, %esp
+End:	rrmovl  %ebp, %esp
 		popl	%ebp
 		ret
 

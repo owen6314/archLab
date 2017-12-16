@@ -1,5 +1,6 @@
+# 软件52班 张迁瑞 2015013226
 		.pos 0
-init:		irmovl Stack, %esp
+init:	irmovl Stack, %esp
 		irmovl Stack, %ebp
 		call   Main   
 		halt

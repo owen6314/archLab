@@ -1,5 +1,6 @@
+# 软件52班 张迁瑞 2015013226
 		.pos 0
-init:		irmovl Stack, %esp
+init:	irmovl Stack, %esp
 		irmovl Stack, %ebp
 		call   Main   
 		halt
@@ -31,7 +32,7 @@ sum_list:	pushl	%ebp
 		andl	%edx, %edx	# test if array length is 0
 		je	End		# if array length is 0, stop calculating
 
-Loop:		mrmovl	(%edx), %esi	# esi = current value
+Loop:	mrmovl	(%edx), %esi	# esi = current value
 		addl	%esi, %eax	# add current value to total value
 		irmovl	$4, %edi	# edi=4
 		addl	%edi, %edx	# set edx as next
@@ -42,7 +43,8 @@ Loop:		mrmovl	(%edx), %esi	# esi = current value
 		je	End
 		jmp	Loop
 		
-End:		rrmovl	%ebp, %esp
+End:	
+rrmovl	%ebp, %esp
 		popl	%ebp
 		ret
 
