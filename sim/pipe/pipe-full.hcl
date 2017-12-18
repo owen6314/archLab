@@ -1,4 +1,12 @@
 #/* $begin pipe-all-hcl */
+###################################################################
+# Qianrui Zhang Software 52, 2015013226
+# IADDL-Description
+
+
+# LEAVE-Description
+
+
 ####################################################################
 #    HCL Description of Control for Pipelined Y86 Processor        #
 #    Copyright (C) Randal E. Bryant, David R. O'Hallaron, 2010     #
