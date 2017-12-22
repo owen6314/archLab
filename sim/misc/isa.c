@@ -93,6 +93,8 @@ instr_t instruction_set[] =
     {"popl",   HPACK(I_POPL, F_NONE) ,  2, R_ARG, 1, 1, NO_ARG, 0, 0 },
     {"iaddl",  HPACK(I_IADDL, F_NONE), 6, I_ARG, 2, 4, R_ARG, 1, 0 },
     {"leave",  HPACK(I_LEAVE, F_NONE), 1, NO_ARG, 0, 0, NO_ARG, 0, 0 },
+    /* my work */
+    {"rmxchg", HPACK(I_RMXCHG, F_NONE), 6, R_ARG, 1, 1, M_ARG, 1, 0 },
     /* this is just a hack to make the I_POP2 code have an associated name */
     {"pop2",   HPACK(I_POP2, F_NONE) , 0, NO_ARG, 0, 0, NO_ARG, 0, 0 },
 
@@ -650,7 +652,7 @@ stat_t step_state(state_ptr s, FILE *error_file)
     need_regids =
 	(hi0 == I_RRMOVL || hi0 == I_ALU || hi0 == I_PUSHL ||
 	 hi0 == I_POPL || hi0 == I_IRMOVL || hi0 == I_RMMOVL ||
-	 hi0 == I_MRMOVL || hi0 == I_IADDL);
+	 hi0 == I_MRMOVL || hi0 == I_IADDL || hi0 == I_RMXCHG);
 
     if (need_regids) {
 	ok1 = get_byte_val(s->m, ftpc, &byte1);
@@ -661,7 +663,7 @@ stat_t step_state(state_ptr s, FILE *error_file)
 
     need_imm =
 	(hi0 == I_IRMOVL || hi0 == I_RMMOVL || hi0 == I_MRMOVL ||
-	 hi0 == I_JMP || hi0 == I_CALL || hi0 == I_IADDL);
+	 hi0 == I_JMP || hi0 == I_CALL || hi0 == I_IADDL || hi0 == I_RMXCHG);
 
     if (need_imm) {
 	okc = get_word_val(s->m, ftpc, &cval);
@@ -941,6 +943,43 @@ stat_t step_state(state_ptr s, FILE *error_file)
 	s->cc = compute_cc(A_ADD, cval, argB);
 	s->pc = ftpc;
 	break;
+    // my work: rmxchg
+    case I_RMXCHG:
+    if (!ok1) {
+        if (error_file)
+        fprintf(error_file,
+            "PC = 0x%x, Invalid instruction address\n", s->pc);
+        return STAT_ADR;
+    }
+    if (!okc) {
+        if (error_file)
+        fprintf(error_file,
+            "PC = 0x%x, Invalid instruction address",
+            s->pc);
+        return STAT_INS;
+    }
+    if (!reg_valid(lo1)) {
+        if (error_file)
+        fprintf(error_file,
+            "PC = 0x%x, Invalid register ID 0x%.1x\n",
+            s->pc, lo1);
+        return STAT_INS;
+    }
+    if (reg_valid(lo1))
+      cval += get_reg_val(s->r, lo1);
+    val = get_reg_val(s->r, hi1);
+    if (!get_word_val(s->m, cval, &tval))
+      return STAT_ADR;
+    if (!set_word_val(s->m, cval, val)) {
+      if (error_file)
+        fprintf(error_file,
+      "PC = 0x%x, Invalid data address 0x%x\n",
+      s->pc, cval);
+      return STAT_ADR;
+    }
+    set_reg_val(s->r, hi1, tval);
+    s->pc = ftpc;
+    break;
     default:
 	if (error_file)
 	    fprintf(error_file,
