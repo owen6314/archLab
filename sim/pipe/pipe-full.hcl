@@ -5,32 +5,31 @@
 # PC selection and fetch:
 #    icode:ifun <- M1[PC]
 #    rA:rB <- M1[PC + 1]
-#    valC <- M4[PC + 2]
-#    valP <- PC + 6
+#    f_valC <- M4[PC + 2]
+#    f_valP <- PC + 6
 # decode:
-#    valB <- R[rb]
+#    d_valB <- R[rb]
 # execute:
-#    valE <- valB + valC
+#    e_valE <- E_valB + E_valC
 #    set CC
 # memory:
 # write back:
-#    R[rb] <- valE
-# PC update:
-#    PC <- valP
+#    R[rb] <- W_valE
+#
 # LEAVE-Description
 # PC selection and fetch:
 #    icode:ifun <- M1[PC]
-#    valP <- PC + 1
+#    f_valP <- PC + 1
 # decode:
-#    valA <- R[%ebp]
-#    valB <- R[%esp]
+#    d_valA <- R[%ebp]
+#    d_valB <- R[%esp]
 # execute:
-#    valE <- valA + 4
+#    e_valE <- E_valA + 4
 # memory:
-#    valM <- M4[valA]
+#    m_valM <- M4[M_valA]
 # write back:
-#    R[%esp] <- valE
-#    R[%ebp] <- valM
+#    R[%esp] <- W_valE
+#    R[%ebp] <- W_valM
 ####################################################################
 #    HCL Description of Control for Pipelined Y86 Processor        #
 #    Copyright (C) Randal E. Bryant, David R. O'Hallaron, 2010     #
