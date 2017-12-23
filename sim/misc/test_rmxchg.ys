@@ -1,0 +1,21 @@
+# test program for y86 rmxchg
+	.pos 0
+Init:	irmovl Stack, %esp
+	irmovl Stack, %ebp
+	call	Main
+	halt
+
+	.align 4
+array: .long 0xd0
+
+Main:	pushl %ebp
+	rrmovl %esp, %ebp
+	irmovl $1, %eax
+	irmovl array, %ebx
+	rmxchg %eax, 0(%ebx)
+	rrmovl %eax, %ecx
+	leave
+	ret
+
+	.pos 100
+Stack: 

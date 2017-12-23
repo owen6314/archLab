@@ -637,6 +637,7 @@ stat_t step_state(state_ptr s, FILE *error_file)
     bool_t need_regids;
     bool_t need_imm;
     word_t ftpc = s->pc;  /* Fall-through PC */
+    word_t tval = 0;
 
     if (!get_byte_val(s->m, ftpc, &byte0)) {
 	if (error_file)
