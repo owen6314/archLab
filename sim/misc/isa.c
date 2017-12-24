@@ -91,9 +91,11 @@ instr_t instruction_set[] =
     {"ret",    HPACK(I_RET, F_NONE), 1, NO_ARG, 0, 0, NO_ARG, 0, 0 },
     {"pushl",  HPACK(I_PUSHL, F_NONE) , 2, R_ARG, 1, 1, NO_ARG, 0, 0 },
     {"popl",   HPACK(I_POPL, F_NONE) ,  2, R_ARG, 1, 1, NO_ARG, 0, 0 },
-    {"iaddl",  HPACK(I_IADDL, F_NONE), 6, I_ARG, 2, 4, R_ARG, 1, 0 },
     {"leave",  HPACK(I_LEAVE, F_NONE), 1, NO_ARG, 0, 0, NO_ARG, 0, 0 },
-    /* my work */
+    {"iaddl",  HPACK(I_IALU, A_ADD), 6, I_ARG, 2, 4, R_ARG, 1, 0 },
+    {"isubl",  HPACK(I_IALU, A_SUB), 6, I_ARG, 2, 4, R_ARG, 1, 0 },
+    {"iandl",  HPACK(I_IALU, A_AND), 6, I_ARG, 2, 4, R_ARG, 1, 0 },
+    {"ixorl",  HPACK(I_IALU, A_XOR), 6, I_ARG, 2, 4, R_ARG, 1, 0 },
     {"rmxchg", HPACK(I_RMXCHG, F_NONE), 6, R_ARG, 1, 1, M_ARG, 1, 0 },
     /* this is just a hack to make the I_POP2 code have an associated name */
     {"pop2",   HPACK(I_POP2, F_NONE) , 0, NO_ARG, 0, 0, NO_ARG, 0, 0 },
@@ -653,7 +655,7 @@ stat_t step_state(state_ptr s, FILE *error_file)
     need_regids =
 	(hi0 == I_RRMOVL || hi0 == I_ALU || hi0 == I_PUSHL ||
 	 hi0 == I_POPL || hi0 == I_IRMOVL || hi0 == I_RMMOVL ||
-	 hi0 == I_MRMOVL || hi0 == I_IADDL || hi0 == I_RMXCHG);
+	 hi0 == I_MRMOVL || hi0 == I_IALU hi0 == I_RMXCHG);
 
     if (need_regids) {
 	ok1 = get_byte_val(s->m, ftpc, &byte1);
@@ -664,7 +666,7 @@ stat_t step_state(state_ptr s, FILE *error_file)
 
     need_imm =
 	(hi0 == I_IRMOVL || hi0 == I_RMMOVL || hi0 == I_MRMOVL ||
-	 hi0 == I_JMP || hi0 == I_CALL || hi0 == I_IADDL || hi0 == I_RMXCHG);
+	 hi0 == I_JMP || hi0 == I_CALL || hi0 == I_IALU || hi0 == I_RMXCHG);
 
     if (need_imm) {
 	okc = get_word_val(s->m, ftpc, &cval);
@@ -917,7 +919,7 @@ stat_t step_state(state_ptr s, FILE *error_file)
 	set_reg_val(s->r, REG_EBP, val);
 	s->pc = ftpc;
 	break;
-    case I_IADDL:
+    case I_IALU:
 	if (!ok1) {
 	    if (error_file)
 		fprintf(error_file,
@@ -939,12 +941,11 @@ stat_t step_state(state_ptr s, FILE *error_file)
 	    return STAT_INS;
 	}
 	argB = get_reg_val(s->r, lo1);
-	val = argB + cval;
+	val = compute_alu(lo0, cval, argB);
 	set_reg_val(s->r, lo1, val);
 	s->cc = compute_cc(A_ADD, cval, argB);
 	s->pc = ftpc;
 	break;
-    // my work: rmxchg
     case I_RMXCHG:
     if (!ok1) {
         if (error_file)
