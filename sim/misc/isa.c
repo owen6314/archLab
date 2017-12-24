@@ -655,7 +655,7 @@ stat_t step_state(state_ptr s, FILE *error_file)
     need_regids =
 	(hi0 == I_RRMOVL || hi0 == I_ALU || hi0 == I_PUSHL ||
 	 hi0 == I_POPL || hi0 == I_IRMOVL || hi0 == I_RMMOVL ||
-	 hi0 == I_MRMOVL || hi0 == I_IALU hi0 == I_RMXCHG);
+	 hi0 == I_MRMOVL || hi0 == I_IALU || hi0 == I_RMXCHG);
 
     if (need_regids) {
 	ok1 = get_byte_val(s->m, ftpc, &byte1);

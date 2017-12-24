@@ -1,0 +1,16 @@
+# test program for y86 iandl
+	.pos 0
+Init:	irmovl Stack, %esp
+	irmovl Stack, %ebp
+	call	Main
+	halt
+
+Main:	pushl %ebp
+	rrmovl %esp, %ebp
+	irmovl $333, %eax
+	iandl $1, %eax
+	leave
+	ret
+
+	.pos 100
+Stack: 
